@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:learn_bloc/core/custom/colors.dart';
+import 'package:learn_bloc/models/user_model.dart';
 import 'package:learn_bloc/products/user/cubit/user_cubit.dart';
-import 'package:learn_bloc/products/user/cubit/user_model.dart';
 
 class UserView extends StatelessWidget {
   const UserView({Key? key}) : super(key: key);
@@ -61,32 +61,52 @@ class _Body extends StatelessWidget {
     return BlocBuilder<UserCubit, UserState>(
       builder: (context, state) {
         if (state is UserError) {
-          return Center(
-            child: Text(
-              state.message,
-              style: const TextStyle(
-                color: CustomColors.primaryColor,
-              ),
-            ),
-          );
+          return _ErrorState(state: state);
         } else if (state is UserLoaded) {
           return _UserInfoArea(user: state.user);
         } else if (state is UserLoading) {
-          return Column(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.4,
-              ),
-              const Center(
-                child: CircularProgressIndicator(
-                  color: CustomColors.primaryColor,
-                ),
-              ),
-            ],
-          );
+          return const _LoadingState();
         }
         return const _GetDataArea();
       },
+    );
+  }
+}
+
+class _ErrorState extends StatelessWidget {
+  final UserError state;
+
+  const _ErrorState({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        state.message,
+        style: const TextStyle(
+          color: CustomColors.primaryColor,
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingState extends StatelessWidget {
+  const _LoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.4,
+        ),
+        const Center(
+          child: CircularProgressIndicator(
+            color: CustomColors.primaryColor,
+          ),
+        ),
+      ],
     );
   }
 }

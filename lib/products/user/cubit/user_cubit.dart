@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_bloc/core/api/api_constanst.dart';
-import 'package:learn_bloc/products/user/cubit/user_model.dart';
+import 'package:learn_bloc/models/user_model.dart';
 
 part 'user_state.dart';
 
