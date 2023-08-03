@@ -9,6 +9,7 @@ import 'package:learn_bloc/products/user_repo/view/user_repo_view.dart';
 import 'package:learn_bloc/products/widgets/custom_column/custom_column.dart';
 import 'package:learn_bloc/products/widgets/error_state_widget/error_state_widget.dart';
 import 'package:learn_bloc/products/widgets/loading_state_widget/loading_state_widget.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class UserInfoView extends StatelessWidget {
   const UserInfoView({Key? key}) : super(key: key);
@@ -166,13 +167,80 @@ class _UserInfoArea extends StatelessWidget {
           _UserProfilePictureAndInfo(user: user),
           _UserLocation(user: user),
           _UserFollowers(user: user),
+          _UserEmail(user: user),
           _UserBlog(user: user),
           _UserTwitter(user: user),
+          _UserCreatedAt(user: user),
+          _UserUpdatedAt(user: user),
+          const SizedBox(
+            height: 10,
+          ),
           _UserRepoAndGistCount(user: user),
           _UserShowReposButton(user: user)
         ],
       ),
     );
+  }
+}
+
+class _UserCreatedAt extends StatelessWidget {
+  final User user;
+  const _UserCreatedAt({
+    required this.user,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _RowIconTextWidget(
+      icon: FontAwesomeIcons.calendarDays,
+      text: "Joined at ${user.createdAt.day}/${user.createdAt.month}/${user.createdAt.year}\t${user.createdAt.hour}:${user.createdAt.minute}:${user.createdAt.second}",
+    );
+  }
+}
+
+class _UserUpdatedAt extends StatelessWidget {
+  final User user;
+  const _UserUpdatedAt({
+    required this.user,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _RowIconTextWidget(
+      icon: FontAwesomeIcons.calendarCheck,
+      text: "Updated at ${user.updatedAt.day}/${user.updatedAt.month}/${user.updatedAt.year}\t${user.updatedAt.hour}:${user.updatedAt.minute}:${user.updatedAt.second}",
+    );
+  }
+}
+
+class _UserEmail extends StatelessWidget {
+  final User user;
+  const _UserEmail({
+    required this.user,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return user.email.isEmpty
+        ? const SizedBox()
+        : GestureDetector(
+            onTap: () async {
+              try {
+                final Uri emailLaunchUri = Uri(scheme: 'mailto', path: user.email);
+                launchUrlString(emailLaunchUri.toString());
+              } on Exception {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Something went wrong"),
+                  ),
+                );
+              }
+            },
+            child: _RowIconTextWidget(
+              icon: FontAwesomeIcons.envelope,
+              text: user.email,
+            ),
+          );
   }
 }
 
@@ -333,23 +401,9 @@ class _UserLocation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return user.location.isNotEmpty
-        ? Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const FaIcon(
-                FontAwesomeIcons.locationDot,
-                size: 16,
-              ),
-              const SizedBox(width: 5),
-              Text(
-                user.location,
-                textAlign: TextAlign.start,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
+        ? _RowIconTextWidget(
+            icon: FontAwesomeIcons.locationDot,
+            text: user.location,
           )
         : const SizedBox();
   }
@@ -363,25 +417,9 @@ class _UserFollowers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const FaIcon(
-          FontAwesomeIcons.userGroup,
-          size: 16,
-        ),
-        const SizedBox(width: 5),
-        Expanded(
-          child: Text(
-            "${user.followers} Followers · ${user.following} Following",
-            textAlign: TextAlign.left,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-      ],
+    return _RowIconTextWidget(
+      icon: FontAwesomeIcons.userGroup,
+      text: "${user.followers} Followers · ${user.following} Following",
     );
   }
 }
@@ -396,24 +434,9 @@ class _UserTwitter extends StatelessWidget {
   Widget build(BuildContext context) {
     return user.twitterUsername.isEmpty
         ? const SizedBox()
-        : Row(
-            children: [
-              const FaIcon(
-                FontAwesomeIcons.twitter,
-                size: 16,
-              ),
-              const SizedBox(width: 5),
-              Expanded(
-                child: Text(
-                  user.twitterUsername,
-                  textAlign: TextAlign.start,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-            ],
+        : _RowIconTextWidget(
+            icon: FontAwesomeIcons.twitter,
+            text: user.twitterUsername,
           );
   }
 }
@@ -428,25 +451,47 @@ class _UserBlog extends StatelessWidget {
   Widget build(BuildContext context) {
     return user.blog.isEmpty
         ? const SizedBox()
-        : Row(
-            children: [
-              const FaIcon(
-                FontAwesomeIcons.link,
-                size: 16,
-              ),
-              const SizedBox(width: 5),
-              Expanded(
-                child: Text(
-                  user.blog,
-                  textAlign: TextAlign.start,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-            ],
+        : _RowIconTextWidget(
+            icon: FontAwesomeIcons.link,
+            text: user.blog,
           );
+  }
+}
+
+class _RowIconTextWidget extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  const _RowIconTextWidget({
+    required this.icon,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 20,
+          child: FaIcon(
+            icon,
+            size: 16,
+          ),
+        ),
+        const SizedBox(
+          width: 5,
+        ),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -468,7 +513,7 @@ class _UserShowReposButton extends StatelessWidget {
             color: Colors.white,
           ),
           label: const Text(
-            "Show Repos",
+            "Show All Repos",
             style: TextStyle(
               color: Colors.white,
             ),
