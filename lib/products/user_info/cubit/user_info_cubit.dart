@@ -5,25 +5,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_bloc/core/api/api_constanst.dart';
 import 'package:learn_bloc/models/user_model.dart';
 
-part 'user_state.dart';
+part 'user_info_state.dart';
 
-class UserCubit extends Cubit<UserState> {
-  UserCubit() : super(UserInitial());
+class UserInfoCubit extends Cubit<UserInfoState> {
+  UserInfoCubit() : super(UserInitial());
 
   final Dio dio = Dio();
 
   TextEditingController userNameController = TextEditingController();
+  String getUserName() => userNameController.text.trim();
 
   Future<void> getUserData() async {
-    final userName = userNameController.text.trim();
-
     try {
       emit(UserLoading());
-      await Future.delayed(const Duration(seconds: 1));
-      final response = await Dio().get(
+      final response = await dio.get(
         APIConstants.user.replaceFirst(
           "{username}",
-          userName,
+          getUserName(),
+        ),
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${APIConstants.githubToken}',
+          },
         ),
       );
 

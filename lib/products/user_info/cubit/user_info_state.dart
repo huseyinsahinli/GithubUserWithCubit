@@ -1,15 +1,15 @@
-part of 'user_cubit.dart';
+part of 'user_info_cubit.dart';
 
-abstract class UserState extends Equatable {
-  const UserState();
+abstract class UserInfoState extends Equatable {
+  const UserInfoState();
 }
 
-class UserInitial extends UserState {
+class UserInitial extends UserInfoState {
   @override
   List<Object> get props => [];
 }
 
-class UserLoaded extends UserState {
+class UserLoaded extends UserInfoState {
   final User user;
 
   const UserLoaded(this.user);
@@ -18,12 +18,12 @@ class UserLoaded extends UserState {
   List<Object> get props => [user];
 }
 
-class UserLoading extends UserState {
+class UserLoading extends UserInfoState {
   @override
   List<Object> get props => [];
 }
 
-class UserError extends UserState {
+class UserError extends UserInfoState {
   final String message;
 
   const UserError(this.message);
