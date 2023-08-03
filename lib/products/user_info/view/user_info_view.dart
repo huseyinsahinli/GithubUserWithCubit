@@ -168,9 +168,62 @@ class _UserInfoArea extends StatelessWidget {
           _UserFollowers(user: user),
           _UserBlog(user: user),
           _UserTwitter(user: user),
+          _UserRepoAndGistCount(user: user),
           _UserShowReposButton(user: user)
         ],
       ),
+    );
+  }
+}
+
+class _UserRepoAndGistCount extends StatelessWidget {
+  final User user;
+  const _UserRepoAndGistCount({
+    required this.user,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Column(
+          children: [
+            Text(
+              user.publicRepos.toString(),
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const Text(
+              "Repositories",
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+        Column(
+          children: [
+            Text(
+              user.publicGists.toString(),
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const Text(
+              "Gists",
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -407,8 +460,19 @@ class _UserShowReposButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ElevatedButton(
+        ElevatedButton.icon(
+          icon: const FaIcon(
+            FontAwesomeIcons.github,
+            color: Colors.white,
+          ),
+          label: const Text(
+            "Show Repos",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
@@ -427,9 +491,6 @@ class _UserShowReposButton extends StatelessWidget {
               ),
             );
           },
-          child: const Text(
-            "Show Repos",
-          ),
         ),
       ],
     );
