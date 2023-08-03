@@ -11,13 +11,26 @@ class ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        message,
-        style: const TextStyle(
-          color: CustomColors.primaryColor,
+    return Column(
+      children: [
+        const SizedBox(
+          height: 100,
         ),
-      ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: CustomColors.primaryColor,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
