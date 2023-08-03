@@ -81,7 +81,18 @@ class _GetUserDataArea extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
         children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.3,
+            child: Image.network(
+              "https://cdn-icons-png.flaticon.com/512/25/25231.png",
+              fit: BoxFit.contain,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
           TextField(
+            onTapOutside: (event) => FocusScope.of(context).unfocus(),
             decoration: const InputDecoration(
               hintText: "Enter Github Username",
               focusedBorder: OutlineInputBorder(
@@ -116,6 +127,14 @@ class _GetUserDataArea extends StatelessWidget {
               backgroundColor: CustomColors.primaryColor,
             ),
             onPressed: () {
+              if (context.read<UserInfoCubit>().userNameController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Please enter username"),
+                  ),
+                );
+                return;
+              }
               context.read<UserInfoCubit>().getUserData();
             },
             child: const Text(
