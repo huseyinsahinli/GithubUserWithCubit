@@ -1,16 +1,27 @@
-# learn_bloc
+# Github Stalker
 
-A new Flutter project.
+This project is a Flutter application that retrieves information about Github users based on their username. 
 
-## Getting Started
+## Overview
 
-This project is a starting point for a Flutter application.
+The application allows the user to enter a Github username and then retrieves and displays information about the corresponding Github profile. This is an excellent tool for developers who want to quickly find out more about other Github users.
 
-A few resources to get you started if this is your first Flutter project:
+## Technologies Used
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- [Flutter](https://flutter.dev/)
+- [flutter_bloc](https://pub.dev/packages/flutter_bloc) for state management
+- [dio](https://pub.dev/packages/dio) for networking
+- [equatable](https://pub.dev/packages/equatable) for value comparison
+- [font_awesome_flutter](https://pub.dev/packages/font_awesome_flutter) for icons
+- [flutter_dotenv](https://pub.dev/packages/flutter_dotenv) for environment variable handling
+- [url_launcher](https://pub.dev/packages/url_launcher) for launching URLs
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+## How to Use 
+
+Once you have started the application, enter the Github username of the user you would like to "stalk" and press the "Stalk" button. The application will then retrieve and display information about the user.
+
+## Contributions
+
+Contributions are welcomed! If you see an issue that you'd like to see fixed, the best way to make it happen is to help out by submitting a pull request implementing it. I'll be happy to review your pull request!
+
