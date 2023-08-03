@@ -49,11 +49,90 @@ class _Body extends StatelessWidget {
         } else if (state is UserRepoError) {
           return ErrorState(message: state.message);
         } else if (state is UserRepoLoaded) {
-          return _UserRepoArea(userRepoState: state);
+          return Column(
+            children: [
+              const SizedBox(
+                height: 15,
+              ),
+              _RepoSearch(userRepoState: state),
+              _UserRepoArea(userRepoState: state),
+            ],
+          );
         }
-
         return Container();
       },
+    );
+  }
+}
+
+class _RepoSearch extends StatelessWidget {
+  final UserRepoLoaded userRepoState;
+  const _RepoSearch({
+    required this.userRepoState,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 5,
+      ),
+      child: TextFormField(
+        onTapOutside: (event) => FocusScope.of(context).unfocus(),
+        decoration: InputDecoration(
+          isDense: true,
+          constraints: const BoxConstraints(
+            maxHeight: 50,
+          ),
+          hintText: "Search Repositories",
+          prefixIcon: const Icon(
+            Icons.search,
+            size: 24,
+            color: CustomColors.primaryColor,
+          ),
+          suffixIcon: context.read<UserRepoCubit>().searchController.text.isNotEmpty
+              ? GestureDetector(
+                  onTap: () {
+                    context.read<UserRepoCubit>().searchController.clear();
+                    context.read<UserRepoCubit>().searchRepo("");
+                  },
+                  child: const Icon(
+                    FontAwesomeIcons.circleXmark,
+                    size: 20,
+                    color: CustomColors.primaryColor,
+                  ),
+                )
+              : null,
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(5),
+            ),
+            borderSide: BorderSide(
+              width: 1,
+              color: CustomColors.primaryColor,
+            ),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(5),
+            ),
+            borderSide: BorderSide(
+              width: 1,
+              color: CustomColors.primaryColor,
+            ),
+          ),
+          labelText: "Search Repositories",
+          labelStyle: const TextStyle(
+            color: CustomColors.primaryColor,
+          ),
+        ),
+        cursorColor: CustomColors.primaryColor,
+        controller: context.read<UserRepoCubit>().searchController,
+        onChanged: (value) {
+          context.read<UserRepoCubit>().searchRepo(value);
+        },
+      ),
     );
   }
 }
