@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:learn_bloc/core/custom/colors.dart';
 import 'package:learn_bloc/products/user_repo/cubit/user_repo_cubit.dart';
-import 'package:learn_bloc/products/widgets/error_state_widget/error_state_widget.dart';
-import 'package:learn_bloc/products/widgets/loading_state_widget/loading_state_widget.dart';
+import 'package:learn_bloc/widgets/error_state_widget/error_state_widget.dart';
+import 'package:learn_bloc/widgets/loading_state_widget/loading_state_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UserRepoView extends StatelessWidget {

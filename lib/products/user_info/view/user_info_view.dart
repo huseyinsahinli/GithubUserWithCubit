@@ -6,9 +6,9 @@ import 'package:learn_bloc/models/user_model.dart';
 import 'package:learn_bloc/products/user_info/cubit/user_info_cubit.dart';
 import 'package:learn_bloc/products/user_repo/cubit/user_repo_cubit.dart';
 import 'package:learn_bloc/products/user_repo/view/user_repo_view.dart';
-import 'package:learn_bloc/products/widgets/custom_column/custom_column.dart';
-import 'package:learn_bloc/products/widgets/error_state_widget/error_state_widget.dart';
-import 'package:learn_bloc/products/widgets/loading_state_widget/loading_state_widget.dart';
+import 'package:learn_bloc/widgets/custom_column/custom_column.dart';
+import 'package:learn_bloc/widgets/error_state_widget/error_state_widget.dart';
+import 'package:learn_bloc/widgets/loading_state_widget/loading_state_widget.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class UserInfoView extends StatelessWidget {
