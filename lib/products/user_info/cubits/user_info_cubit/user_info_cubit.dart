@@ -15,13 +15,14 @@ class UserInfoCubit extends Cubit<UserInfoState> {
   TextEditingController userNameController = TextEditingController();
   String getUserName() => userNameController.text.trim();
 
-  Future<void> getUserData() async {
+  Future<void> getUserData({String? user}) async {
     try {
       emit(UserLoading());
+
       final response = await dio.get(
         APIConstants.user.replaceFirst(
           "{username}",
-          getUserName(),
+          user ?? getUserName(),
         ),
         options: Options(
           headers: {

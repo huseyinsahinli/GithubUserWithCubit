@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:learn_bloc/core/custom/colors.dart';
+import 'package:learn_bloc/models/user_followers.dart';
 import 'package:learn_bloc/models/user_model.dart';
-import 'package:learn_bloc/products/user_info/cubit/user_info_cubit.dart';
+import 'package:learn_bloc/products/user_info/cubits/user_followers_cubit/user_followers_cubit_cubit.dart';
+import 'package:learn_bloc/products/user_info/cubits/user_info_cubit/user_info_cubit.dart';
 import 'package:learn_bloc/products/user_repo/cubit/user_repo_cubit.dart';
 import 'package:learn_bloc/products/user_repo/view/user_repo_view.dart';
 import 'package:learn_bloc/widgets/custom_column/custom_column.dart';
 import 'package:learn_bloc/widgets/error_state_widget/error_state_widget.dart';
 import 'package:learn_bloc/widgets/loading_state_widget/loading_state_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class UserInfoView extends StatelessWidget {
@@ -16,8 +19,17 @@ class UserInfoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => UserInfoCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => UserInfoCubit(),
+        ),
+        BlocProvider(
+          create: (context) => UserFollowersCubit(
+            context.read<UserInfoCubit>().getUserName(),
+          ),
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: CustomColors.primaryColor,
@@ -69,6 +81,233 @@ class _Body extends StatelessWidget {
 
         return const _GetUserDataArea();
       },
+    );
+  }
+}
+
+class _UserInfoArea extends StatelessWidget {
+  final User user;
+
+  const _UserInfoArea({Key? key, required this.user}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: CustomColumn(
+        spaceHeight: 5,
+        children: [
+          _UserProfilePictureAndInfo(user: user),
+          _UserLocation(user: user),
+          _UserFollowers(user: user),
+          _UserEmail(user: user),
+          _UserBlog(user: user),
+          _UserTwitter(user: user),
+          _UserCreatedAt(user: user),
+          _UserUpdatedAt(user: user),
+          const SizedBox(
+            height: 10,
+          ),
+          _UserRepoAndGistCount(user: user),
+          _UserShowReposButton(user: user),
+          _UserShowFollowersArea(
+            user: user,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UserShowFollowersArea extends StatelessWidget {
+  final User user;
+  const _UserShowFollowersArea({
+    required this.user,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<UserFollowersCubit, UserFollowersState>(
+      builder: (context, state) {
+        if (state is UserFollowersLoading) {
+          return const LoadingState(
+            height: 0.01,
+          );
+        } else if (state is UserFollowersError) {
+          return ErrorState(message: state.message);
+        } else if (state is UserFollowersLoaded) {
+          return _UserFollowersArea(
+            followers: state.userFollowers,
+          );
+        }
+        return Container();
+      },
+    );
+  }
+}
+
+class _UserFollowersArea extends StatelessWidget {
+  final List<UserFollowers> followers;
+  const _UserFollowersArea({
+    required this.followers,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "Followers",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Text(
+              "(${followers.length})",
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        SizedBox(
+          height: 450, // Bu değeri ihtiyacınıza göre ayarlayabilirsiniz
+          child: ListView.builder(
+            itemCount: followers.length,
+            itemBuilder: (context, index) {
+              var follower = followers[index];
+              return Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    padding: const EdgeInsets.only(
+                      right: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: CustomColors.primaryColor,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 55,
+                          height: 55,
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              bottomLeft: Radius.circular(5),
+                            ),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                follower.avatarUrl,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      follower.login,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 17,
+                                        color: CustomColors.onPrimaryColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      follower.id.toString(),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: CustomColors.onPrimaryColor.withOpacity(0.5),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          iconSize: 25,
+                          onPressed: () async {
+                            context.read<UserInfoCubit>().getUserData(user: follower.login);
+                            context.read<UserFollowersCubit>().getUserFollowers(user: follower.login);
+                          },
+                          icon: const FaIcon(
+                            FontAwesomeIcons.magnifyingGlass,
+                            color: CustomColors.onPrimaryColor,
+                          ),
+                        ),
+                        IconButton(
+                          iconSize: 30,
+                          onPressed: () async {
+                            try {
+                              final Uri url = Uri.parse(
+                                follower.htmlUrl,
+                              );
+                              if (!await launchUrl(
+                                url,
+                                mode: LaunchMode.externalApplication,
+                                webOnlyWindowName: "github",
+                              )) {
+                                throw "Can't open the link";
+                              }
+                            } on Exception {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Can't open the link"),
+                                ),
+                              );
+                            }
+                          },
+                          icon: const FaIcon(
+                            FontAwesomeIcons.github,
+                            color: CustomColors.onPrimaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (index == followers.length - 1)
+                    const SizedBox(
+                      height: 250,
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -146,37 +385,6 @@ class _GetUserDataArea extends StatelessWidget {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _UserInfoArea extends StatelessWidget {
-  final User user;
-
-  const _UserInfoArea({Key? key, required this.user}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: CustomColumn(
-        spaceHeight: 5,
-        children: [
-          _UserProfilePictureAndInfo(user: user),
-          _UserLocation(user: user),
-          _UserFollowers(user: user),
-          _UserEmail(user: user),
-          _UserBlog(user: user),
-          _UserTwitter(user: user),
-          _UserCreatedAt(user: user),
-          _UserUpdatedAt(user: user),
-          const SizedBox(
-            height: 10,
-          ),
-          _UserRepoAndGistCount(user: user),
-          _UserShowReposButton(user: user)
         ],
       ),
     );
@@ -337,53 +545,56 @@ class _UserProfilePictureAndInfo extends StatelessWidget {
         Expanded(
           child: SizedBox(
             height: 100,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        user.name,
-                        textAlign: TextAlign.start,
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          user.name,
+                          textAlign: TextAlign.start,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        user.login,
-                        textAlign: TextAlign.start,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          user.login,
+                          textAlign: TextAlign.start,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        user.bio,
-                        textAlign: TextAlign.start,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          user.bio,
+                          maxLines: 5,
+                          textAlign: TextAlign.start,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
