@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-User githubUserModelFromJson(String str) => User.fromJson(json.decode(str));
+UserModel githubUserModelFromJson(String str) => UserModel.fromJson(json.decode(str));
 
-String githubUserModelToJson(User data) => json.encode(data.toJson());
+String githubUserModelToJson(UserModel data) => json.encode(data.toJson());
 
-class User {
-  User({
+class UserModel {
+  UserModel({
     required this.login,
     required this.id,
     required this.nodeId,
@@ -73,7 +73,7 @@ class User {
   DateTime createdAt;
   DateTime updatedAt;
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         login: json["login"] ?? "",
         id: json["id"] ?? 0,
         nodeId: json["node_id"] ?? "",

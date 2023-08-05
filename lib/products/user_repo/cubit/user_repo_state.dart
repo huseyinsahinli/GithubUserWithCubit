@@ -10,7 +10,7 @@ class UserRepoInitial extends UserRepoState {
 }
 
 class UserRepoLoaded extends UserRepoState {
-  final List<Repo> repos;
+  final List<RepoModel> repos;
 
   const UserRepoLoaded(this.repos);
 

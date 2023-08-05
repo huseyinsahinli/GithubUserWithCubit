@@ -9,7 +9,7 @@ part 'user_repo_state.dart';
 
 class UserRepoCubit extends Cubit<UserRepoState> {
   final String userName;
-  final List<Repo> repos = [];
+  final List<RepoModel> repos = [];
   UserRepoCubit(this.userName) : super(UserRepoInitial()) {
     getUserRepos();
   }
@@ -32,7 +32,7 @@ class UserRepoCubit extends Cubit<UserRepoState> {
       );
 
       if (response.statusCode == 200) {
-        final userRepoData = (response.data as List).map((e) => Repo.fromJson(e as Map<String, dynamic>)).toList();
+        final userRepoData = (response.data as List).map((e) => RepoModel.fromJson(e as Map<String, dynamic>)).toList();
         repos.addAll(userRepoData);
         emit(UserRepoLoaded(userRepoData));
       } else {
@@ -44,7 +44,7 @@ class UserRepoCubit extends Cubit<UserRepoState> {
   }
 
   void searchRepo(String query) {
-    List<Repo> searchRepos = [];
+    List<RepoModel> searchRepos = [];
     if (query.isEmpty) {
       emit(UserRepoLoaded(repos));
     } else {

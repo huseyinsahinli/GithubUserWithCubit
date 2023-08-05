@@ -10,7 +10,7 @@ abstract class UserFollowersState extends Equatable {
 class UserFollowersCubitInitial extends UserFollowersState {}
 
 class UserFollowersLoaded extends UserFollowersState {
-  final List<UserFollowers> userFollowers;
+  final List<UserFollowModel> userFollowers;
 
   const UserFollowersLoaded(this.userFollowers);
 

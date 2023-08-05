@@ -1,4 +1,4 @@
-class Repo {
+class RepoModel {
   int? id;
   String? nodeId;
   String? name;
@@ -79,7 +79,7 @@ class Repo {
   int? watchers;
   String? defaultBranch;
 
-  Repo(
+  RepoModel(
       {this.id,
       this.nodeId,
       this.name,
@@ -160,7 +160,7 @@ class Repo {
       this.watchers,
       this.defaultBranch});
 
-  Repo.fromJson(Map<String, dynamic> json) {
+  RepoModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     nodeId = json['node_id'];
     name = json['name'];

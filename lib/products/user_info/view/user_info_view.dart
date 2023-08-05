@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:learn_bloc/core/custom/colors.dart';
+import 'package:learn_bloc/core/extensions/string_extensions.dart';
 import 'package:learn_bloc/models/user_followers.dart';
 import 'package:learn_bloc/models/user_model.dart';
+import 'package:learn_bloc/products/user_info/cubits/cubit/user_following_cubit.dart';
 import 'package:learn_bloc/products/user_info/cubits/user_followers_cubit/user_followers_cubit_cubit.dart';
 import 'package:learn_bloc/products/user_info/cubits/user_info_cubit/user_info_cubit.dart';
 import 'package:learn_bloc/products/user_repo/cubit/user_repo_cubit.dart';
@@ -26,6 +28,11 @@ class UserInfoView extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => UserFollowersCubit(
+            context.read<UserInfoCubit>().getUserName(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => UserFollowingCubit(
             context.read<UserInfoCubit>().getUserName(),
           ),
         ),
@@ -86,7 +93,7 @@ class _Body extends StatelessWidget {
 }
 
 class _UserInfoArea extends StatelessWidget {
-  final User user;
+  final UserModel user;
 
   const _UserInfoArea({Key? key, required this.user}) : super(key: key);
 
@@ -110,9 +117,8 @@ class _UserInfoArea extends StatelessWidget {
           ),
           _UserRepoAndGistCount(user: user),
           _UserShowReposButton(user: user),
-          _UserShowFollowersArea(
-            user: user,
-          ),
+          const _UserShowFollowingArea(),
+          const _UserShowFollowersArea(),
         ],
       ),
     );
@@ -120,10 +126,7 @@ class _UserInfoArea extends StatelessWidget {
 }
 
 class _UserShowFollowersArea extends StatelessWidget {
-  final User user;
-  const _UserShowFollowersArea({
-    required this.user,
-  });
+  const _UserShowFollowersArea();
 
   @override
   Widget build(BuildContext context) {
@@ -146,8 +149,130 @@ class _UserShowFollowersArea extends StatelessWidget {
   }
 }
 
+class _UserShowFollowingArea extends StatelessWidget {
+  const _UserShowFollowingArea();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<UserFollowingCubit, UserFollowingState>(
+      builder: (context, state) {
+        if (state is UserFollowingLoading) {
+          return const LoadingState(
+            height: 0.01,
+          );
+        } else if (state is UserFollowingError) {
+          return ErrorState(message: state.message);
+        } else if (state is UserFollowingLoaded) {
+          return _UserFollowingArea(
+            following: state.userFollowers,
+          );
+        }
+        return Container();
+      },
+    );
+  }
+}
+
+class _UserFollowingArea extends StatelessWidget {
+  final List<UserFollowModel> following;
+  const _UserFollowingArea({
+    required this.following,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "Following",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Text(
+              "(${following.length})",
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(5),
+              bottomLeft: Radius.circular(5),
+              bottomRight: Radius.circular(10),
+            ),
+            color: CustomColors.primaryColor,
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.all(10),
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: [
+                for (var user in following)
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          context.read<UserInfoCubit>().getUserData(user: user.login);
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(10),
+                                  topRight: Radius.circular(5),
+                                  bottomLeft: Radius.circular(5),
+                                  bottomRight: Radius.circular(10),
+                                ),
+                                image: DecorationImage(
+                                  image: NetworkImage(user.avatarUrl),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              user.login.truncateWithEllipsis(4),
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: CustomColors.onPrimaryColor,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _UserFollowersArea extends StatelessWidget {
-  final List<UserFollowers> followers;
+  final List<UserFollowModel> followers;
   const _UserFollowersArea({
     required this.followers,
   });
@@ -392,7 +517,7 @@ class _GetUserDataArea extends StatelessWidget {
 }
 
 class _UserCreatedAt extends StatelessWidget {
-  final User user;
+  final UserModel user;
   const _UserCreatedAt({
     required this.user,
   });
@@ -407,7 +532,7 @@ class _UserCreatedAt extends StatelessWidget {
 }
 
 class _UserUpdatedAt extends StatelessWidget {
-  final User user;
+  final UserModel user;
   const _UserUpdatedAt({
     required this.user,
   });
@@ -422,7 +547,7 @@ class _UserUpdatedAt extends StatelessWidget {
 }
 
 class _UserEmail extends StatelessWidget {
-  final User user;
+  final UserModel user;
   const _UserEmail({
     required this.user,
   });
@@ -453,7 +578,7 @@ class _UserEmail extends StatelessWidget {
 }
 
 class _UserRepoAndGistCount extends StatelessWidget {
-  final User user;
+  final UserModel user;
   const _UserRepoAndGistCount({
     required this.user,
   });
@@ -505,7 +630,7 @@ class _UserRepoAndGistCount extends StatelessWidget {
 }
 
 class _UserProfilePictureAndInfo extends StatelessWidget {
-  final User user;
+  final UserModel user;
   const _UserProfilePictureAndInfo({
     required this.user,
   });
@@ -604,7 +729,7 @@ class _UserProfilePictureAndInfo extends StatelessWidget {
 }
 
 class _UserLocation extends StatelessWidget {
-  final User user;
+  final UserModel user;
   const _UserLocation({
     required this.user,
   });
@@ -621,7 +746,7 @@ class _UserLocation extends StatelessWidget {
 }
 
 class _UserFollowers extends StatelessWidget {
-  final User user;
+  final UserModel user;
   const _UserFollowers({
     required this.user,
   });
@@ -636,7 +761,7 @@ class _UserFollowers extends StatelessWidget {
 }
 
 class _UserTwitter extends StatelessWidget {
-  final User user;
+  final UserModel user;
   const _UserTwitter({
     required this.user,
   });
@@ -653,7 +778,7 @@ class _UserTwitter extends StatelessWidget {
 }
 
 class _UserBlog extends StatelessWidget {
-  final User user;
+  final UserModel user;
   const _UserBlog({
     required this.user,
   });
@@ -711,7 +836,7 @@ class _UserShowReposButton extends StatelessWidget {
     required this.user,
   });
 
-  final User user;
+  final UserModel user;
 
   @override
   Widget build(BuildContext context) {

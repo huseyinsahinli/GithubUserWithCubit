@@ -32,7 +32,7 @@ class UserInfoCubit extends Cubit<UserInfoState> {
       );
 
       if (response.statusCode == 200) {
-        final userData = User.fromJson(response.data);
+        final userData = UserModel.fromJson(response.data);
         emit(UserLoaded(userData));
       } else {
         emit(UserError("Error -> ${response.statusCode}"));

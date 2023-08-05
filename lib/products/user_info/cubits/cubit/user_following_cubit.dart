@@ -4,22 +4,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_bloc/core/api/api_constanst.dart';
 import 'package:learn_bloc/models/user_followers.dart';
 
-part 'user_followers_cubit_state.dart';
+part 'user_following_state.dart';
 
-class UserFollowersCubit extends Cubit<UserFollowersState> {
+class UserFollowingCubit extends Cubit<UserFollowingState> {
   final String userName;
 
-  UserFollowersCubit(this.userName) : super(UserFollowersCubitInitial()) {
+  UserFollowingCubit(
+    this.userName,
+  ) : super(UserFollowingInitial()) {
     getUserFollowers();
   }
+
   final Dio dio = Dio();
 
   Future<void> getUserFollowers({String? user}) async {
     try {
-      emit(UserFollowersLoading());
+      emit(UserFollowingLoading());
       await Future.delayed(const Duration(seconds: 2));
       final response = await dio.get(
-        APIConstants.userFollowers.replaceFirst(
+        APIConstants.userFollowing.replaceFirst(
           "{username}",
           user ?? userName,
         ),
@@ -35,12 +38,12 @@ class UserFollowersCubit extends Cubit<UserFollowersState> {
         response.data.forEach((element) {
           userFollowers.add(UserFollowModel.fromJson(element));
         });
-        emit(UserFollowersLoaded(userFollowers));
+        emit(UserFollowingLoaded(userFollowers));
       } else {
-        emit(UserFollowersError("Error -> ${response.statusCode}"));
+        emit(UserFollowingError("Error -> ${response.statusCode}"));
       }
     } catch (e) {
-      emit(UserFollowersError("Error -> $e"));
+      emit(UserFollowingError("Error -> $e"));
     }
   }
 }

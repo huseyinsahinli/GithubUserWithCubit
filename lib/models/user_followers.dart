@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class UserFollowers {
+class UserFollowModel {
   String login;
   int id;
   String nodeId;
@@ -19,7 +19,7 @@ class UserFollowers {
   String receivedEventsUrl;
   String type;
   bool siteAdmin;
-  UserFollowers({
+  UserFollowModel({
     required this.login,
     required this.id,
     required this.nodeId,
@@ -40,7 +40,7 @@ class UserFollowers {
     required this.siteAdmin,
   });
 
-  UserFollowers copyWith({
+  UserFollowModel copyWith({
     String? login,
     int? id,
     String? nodeId,
@@ -60,7 +60,7 @@ class UserFollowers {
     String? type,
     bool? siteAdmin,
   }) {
-    return UserFollowers(
+    return UserFollowModel(
       login: login ?? this.login,
       id: id ?? this.id,
       nodeId: nodeId ?? this.nodeId,
@@ -107,8 +107,8 @@ class UserFollowers {
     return result;
   }
 
-  factory UserFollowers.fromMap(Map<String, dynamic> map) {
-    return UserFollowers(
+  factory UserFollowModel.fromMap(Map<String, dynamic> map) {
+    return UserFollowModel(
       login: map['login'] ?? '',
       id: map['id']?.toInt() ?? 0,
       nodeId: map['nodeId'] ?? '',
@@ -132,8 +132,8 @@ class UserFollowers {
 
   String toJson() => json.encode(toMap());
 
-  factory UserFollowers.fromJson(Map<String, dynamic> map) {
-    return UserFollowers(
+  factory UserFollowModel.fromJson(Map<String, dynamic> map) {
+    return UserFollowModel(
       login: map['login'] ?? '',
       id: map['id'] ?? 0,
       nodeId: map['node_id'] ?? '',
@@ -164,7 +164,7 @@ class UserFollowers {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is UserFollowers &&
+    return other is UserFollowModel &&
         other.login == login &&
         other.id == id &&
         other.nodeId == nodeId &&
