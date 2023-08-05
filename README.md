@@ -59,8 +59,9 @@ The application will then retrieve and display information about the user.
 ## Contributions
 
 Contributions are welcomed! If you see an issue that you'd like to see fixed, the best way to make it happen is to help out by submitting a pull request implementing it. I'll be happy to review your pull request!
+
 ## App Videos
 
-https://github.com/hsynshnl/GithubUserWithCubit/assets/43808862/25eb247d-abda-434f-a01c-f37b549c48f1
+https://github.com/hsynshnl/GithubUserWithCubit/assets/43808862/20762532-38b2-4fa9-9ed3-bc244b778d86
 
 
