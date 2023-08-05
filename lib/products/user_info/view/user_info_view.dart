@@ -49,17 +49,15 @@ class UserInfoView extends StatelessWidget {
           ),
           leading: BlocBuilder<UserInfoCubit, UserInfoState>(
             builder: (context, state) {
-              return IconButton(
-                onPressed: () => context.read<UserInfoCubit>().clearUserData(),
-                icon: FaIcon(
-                  state is UserError
-                      ? FontAwesomeIcons.xmark
-                      : state is UserInitial
-                          ? null
-                          : FontAwesomeIcons.arrowLeft,
-                  color: CustomColors.onPrimaryColor,
-                ),
-              );
+              return state is UserInitial
+                  ? Container()
+                  : IconButton(
+                      onPressed: () => context.read<UserInfoCubit>().clearUserData(),
+                      icon: FaIcon(
+                        state is UserError ? FontAwesomeIcons.xmark : FontAwesomeIcons.arrowLeft,
+                        color: CustomColors.onPrimaryColor,
+                      ),
+                    );
             },
           ),
         ),
